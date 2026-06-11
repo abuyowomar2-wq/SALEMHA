@@ -15,6 +15,9 @@ class Merchant extends Model
         'verification_method',
         'is_active',
         'settings',
+        'salla_api_key',
+        'salla_store_url',
+        'whatsapp_phone',
     ];
 
     protected function casts(): array

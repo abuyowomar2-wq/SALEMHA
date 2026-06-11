@@ -18,6 +18,9 @@ class SettingsController extends Controller
             'logo_url' => $merchant->logo_url,
             'primary_color' => $merchant->primary_color,
             'verification_method' => $merchant->verification_method,
+            'salla_api_key' => $merchant->salla_api_key,
+            'salla_store_url' => $merchant->salla_store_url,
+            'whatsapp_phone' => $merchant->whatsapp_phone,
             'settings' => $merchant->settings,
         ]);
     }

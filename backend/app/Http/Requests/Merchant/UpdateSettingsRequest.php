@@ -18,6 +18,9 @@ class UpdateSettingsRequest extends FormRequest
             'logo_url' => ['nullable', 'string', 'max:500'],
             'primary_color' => ['string', 'max:7'],
             'verification_method' => ['string', 'in:order_number_phone,order_number_code'],
+            'salla_api_key' => ['nullable', 'string', 'max:500'],
+            'salla_store_url' => ['nullable', 'string', 'max:500', 'url'],
+            'whatsapp_phone' => ['nullable', 'string', 'max:20'],
         ];
     }
 }
