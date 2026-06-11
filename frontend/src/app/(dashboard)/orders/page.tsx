@@ -205,25 +205,57 @@ export default function OrdersPage() {
               <button onClick={() => setSelectedOrder(null)} className="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
             </div>
 
-            <div className="space-y-3 mb-6">
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div><span className="text-gray-400">العميل:</span> <span className="font-medium">{selectedOrder.customer_name}</span></div>
-                <div><span className="text-gray-400">الجوال:</span> <span className="font-medium" dir="ltr">{selectedOrder.customer_phone}</span></div>
-                <div><span className="text-gray-400">المنتج:</span> <span className="font-medium">{selectedOrder.product_name || "بدون"}</span></div>
-                <div>
-                  <span className="text-gray-400">الحالة:</span>
-                  <span className={`inline-flex mr-1 rounded-full px-2 py-0.5 text-xs font-medium ${deliveryColors[selectedOrder.delivery_status] || ""}`}>
-                    {deliveryLabels[selectedOrder.delivery_status] || selectedOrder.delivery_status}
-                  </span>
-                </div>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const token = getToken();
+              if (!token || !selectedOrder) return;
+              api.put(`/merchant/orders/${selectedOrder.id}`, selectedOrder, token).then(() => {
+                setSelectedOrder(null);
+                fetchOrders();
+              });
+            }} className="space-y-3 mb-6">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">اسم العميل</label>
+                <input
+                  value={selectedOrder.customer_name}
+                  onChange={(e) => setSelectedOrder({ ...selectedOrder, customer_name: e.target.value })}
+                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">رقم الجوال</label>
+                <input
+                  value={selectedOrder.customer_phone}
+                  onChange={(e) => setSelectedOrder({ ...selectedOrder, customer_phone: e.target.value })}
+                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                  dir="ltr"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">حالة الطلب</label>
+                <select
+                  value={selectedOrder.status}
+                  onChange={(e) => setSelectedOrder({ ...selectedOrder, status: e.target.value })}
+                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                >
+                  <option value="pending">قيد الانتظار</option>
+                  <option value="processing">قيد المعالجة</option>
+                  <option value="delivered">تم التسليم</option>
+                  <option value="cancelled">ملغي</option>
+                </select>
+              </div>
+              <div>
+                <span className="block text-xs text-gray-500 mb-1">
+                  حالة التسليم: <span className={`inline-flex mr-1 rounded-full px-2 py-0.5 text-xs font-medium ${deliveryColors[selectedOrder.delivery_status] || ""}`}>{deliveryLabels[selectedOrder.delivery_status] || selectedOrder.delivery_status}</span>
+                  {selectedOrder.product_name && <span className="mr-2 text-gray-400">| المنتج: {selectedOrder.product_name}</span>}
+                </span>
               </div>
 
               <div className="flex gap-2 pt-2">
-                <button onClick={regenerateLink} className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50">
-                  🔄 إعادة إنشاء الرابط
-                </button>
+                <button type="submit" className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700">حفظ التغييرات</button>
+                <button type="button" onClick={regenerateLink} className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50">🔄 إعادة إنشاء الرابط</button>
               </div>
-            </div>
+            </form>
 
             {/* Delivery Logs */}
             <div className="border-t border-gray-100 pt-4">
