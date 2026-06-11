@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SettingsController;
-use App\Http\Controllers\Api\SyncController;
+use App\Http\Controllers\Api\ImportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -68,8 +68,9 @@ Route::prefix('merchant')->middleware(['auth:sanctum', 'merchant'])->group(funct
     Route::get('/settings', [SettingsController::class, 'show']);
     Route::put('/settings', [SettingsController::class, 'update']);
 
-    // Salla Sync
-    Route::post('/sync/salla', [SyncController::class, 'sallaOrders']);
+    // Import
+    Route::post('/orders/import', [ImportController::class, 'orders']);
+    Route::get('/orders/template', [ImportController::class, 'template']);
 });
 
 /*
