@@ -91,6 +91,8 @@ export default function OrdersPage() {
       alert(err.message || "فشل حفظ التغييرات");
     }
   };
+
+  const fetchOrders = () => {
     const token = getToken();
     if (!token) return;
     api.get<any>("/merchant/orders", token).then((data) => {
