@@ -1,0 +1,67 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: sallemha-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sallemha
+      POSTGRES_USER: sallemha
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: sallemha-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  # Laravel Backend
+  backend:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.php
+    container_name: sallemha-backend
+    restart: unless-stopped
+    working_dir: /var/www/backend
+    volumes:
+      - ./backend:/var/www/backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: sallemha
+      DB_USERNAME: sallemha
+      DB_PASSWORD: secret
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.node
+    container_name: sallemha-frontend
+    restart: unless-stopped
+    working_dir: /var/www/frontend
+    volumes:
+      - ./frontend:/var/www/frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+    command: npm run dev
+
+volumes:
+  postgres_data:

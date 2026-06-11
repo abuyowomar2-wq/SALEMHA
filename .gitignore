@@ -1,0 +1,39 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+vendor/
+
+# Logs
+*.log
+storage/logs/*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# SQLite (dev only - production uses PostgreSQL)
+*.sqlite
+
+# Laravel
+/backend/public/storage
+/backend/storage/*.key
+
+# Next.js
+/frontend/.next/
+/frontend/out/
+
+# Build
+build/
+dist/
+
+# Uploads
+/uploads/
