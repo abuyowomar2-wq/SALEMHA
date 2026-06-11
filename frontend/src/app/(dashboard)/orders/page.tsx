@@ -67,11 +67,6 @@ export default function OrdersPage() {
     fetchOrders();
   };
 
-  const copyLink = (url: string) => {
-    navigator.clipboard.writeText(url);
-    alert("تم نسخ الرابط");
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
