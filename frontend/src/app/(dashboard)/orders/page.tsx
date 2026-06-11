@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api, getToken } from "@/lib/api";
+import { api, getToken, getUser } from "@/lib/api";
 
 type Order = {
   id: number;
@@ -35,6 +35,8 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const [createdLink, setCreatedLink] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
   const [form, setForm] = useState({
     order_number: "",
     customer_name: "",
@@ -52,16 +54,23 @@ export default function OrdersPage() {
     });
   };
 
-  useEffect(() => { fetchOrders(); }, []);
+  useEffect(() => {
+    fetchOrders();
+    setUser(getUser());
+  }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = getToken();
     if (!token) return;
-    await api.post("/merchant/orders", {
+    const data = await api.post<any>("/merchant/orders", {
       ...form,
       product_id: form.product_id ? Number(form.product_id) : null,
     }, token);
+    if (data.raw_token) {
+      const slug = user?.merchant?.store_slug || "";
+      setCreatedLink(`${window.location.origin}/d/${slug}/${data.raw_token}`);
+    }
     setShowCreate(false);
     setForm({ order_number: "", customer_name: "", customer_phone: "", product_id: "", notes: "" });
     fetchOrders();
@@ -101,6 +110,33 @@ export default function OrdersPage() {
                 <button type="submit" className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">إنشاء</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {createdLink && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-lg text-center">
+            <div className="text-4xl mb-3">🔗</div>
+            <h3 className="text-lg font-semibold mb-2">تم إنشاء الطلب</h3>
+            <p className="text-sm text-gray-500 mb-4">رابط التسليم للعميل:</p>
+            <div className="bg-gray-50 rounded-lg p-3 mb-4 text-sm text-blue-600 break-all text-left" dir="ltr">
+              {createdLink}
+            </div>
+            <div className="flex gap-2 justify-center">
+              <button
+                onClick={() => { navigator.clipboard.writeText(createdLink); }}
+                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                نسخ الرابط
+              </button>
+              <button
+                onClick={() => setCreatedLink(null)}
+                className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                إغلاق
+              </button>
+            </div>
           </div>
         </div>
       )}
