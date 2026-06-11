@@ -75,7 +75,22 @@ export default function OrdersPage() {
   const [logs, setLogs] = useState<DeliveryLog[]>([]);
   const [logsLoading, setLogsLoading] = useState(false);
 
-  const fetchOrders = () => {
+  const saveOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = getToken();
+    if (!token || !selectedOrder) return;
+    try {
+      await api.put(`/merchant/orders/${selectedOrder.id}`, {
+        customer_name: selectedOrder.customer_name,
+        customer_phone: selectedOrder.customer_phone,
+        status: selectedOrder.status,
+      }, token);
+      setSelectedOrder(null);
+      fetchOrders();
+    } catch (err: any) {
+      alert(err.message || "فشل حفظ التغييرات");
+    }
+  };
     const token = getToken();
     if (!token) return;
     api.get<any>("/merchant/orders", token).then((data) => {
@@ -205,15 +220,7 @@ export default function OrdersPage() {
               <button onClick={() => setSelectedOrder(null)} className="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
             </div>
 
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              const token = getToken();
-              if (!token || !selectedOrder) return;
-              api.put(`/merchant/orders/${selectedOrder.id}`, selectedOrder, token).then(() => {
-                setSelectedOrder(null);
-                fetchOrders();
-              });
-            }} className="space-y-3 mb-6">
+            <form onSubmit={saveOrder} className="space-y-3 mb-6">
               <div>
                 <label className="block text-xs text-gray-500 mb-1">اسم العميل</label>
                 <input
