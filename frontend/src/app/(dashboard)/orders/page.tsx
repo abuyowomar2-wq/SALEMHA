@@ -37,13 +37,15 @@ const deliveryLabels: Record<string, string> = {
   product_viewed: "تم الاستلام",
 };
 
-const deliveryColors: Record<string, string> = {
+  const deliveryColors: Record<string, string> = {
   not_sent: "bg-gray-100 text-gray-600",
   sent: "bg-blue-100 text-blue-600",
   opened: "bg-yellow-100 text-yellow-600",
   verified: "bg-green-100 text-green-600",
   product_viewed: "bg-emerald-100 text-emerald-700",
 };
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const logLabels: Record<string, string> = {
   link_created: "تم إنشاء الرابط",
@@ -161,10 +163,21 @@ export default function OrdersPage() {
     fetchOrders();
   };
 
-  const downloadTemplate = () => {
+  const downloadTemplate = async () => {
     const token = getToken();
     if (!token) return;
-    window.open(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/merchant/orders/template?token=${token}`, "_blank");
+    try {
+      const res = await fetch(`${API_BASE}/api/merchant/orders/template`, {
+        headers: { Authorization: `Bearer ${token}`, Accept: "text/csv" },
+      });
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "orders_template.csv";
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch {}
   };
 
   const handleImport = async () => {
@@ -176,10 +189,9 @@ export default function OrdersPage() {
 
     const formData = new FormData();
     formData.append("file", importFile);
-    formData.append("_method", "POST");
 
     try {
-      const res = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")}/api/merchant/orders/import`, {
+      const res = await fetch(`${API_BASE}/api/merchant/orders/import`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
         body: formData,
