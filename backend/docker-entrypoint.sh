@@ -6,14 +6,8 @@ if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
 
-# Wait for PostgreSQL to be ready
-echo "Waiting for database..."
-until php artisan migrate:status --no-ansi > /dev/null 2>&1; do
-    sleep 2
-done
+# Try running migrations (don't block if DB not ready yet)
+php artisan migrate --force --seed 2>/dev/null || echo "DB not ready yet, will retry on next deploy"
 
-# Run migrations
-php artisan migrate --force --seed
-
-# Start Apache
-exec "$@"
+# Start Laravel's built-in server on Render's PORT
+exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
