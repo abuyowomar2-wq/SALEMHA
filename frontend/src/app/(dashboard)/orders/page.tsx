@@ -270,10 +270,10 @@ export default function OrdersPage() {
               <div className="text-center text-xs text-gray-400">— أو —</div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">رفع ملف CSV</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">رفع ملف CSV أو XLSX</label>
                 <input
                   type="file"
-                  accept=".csv,.txt"
+                  accept=".csv,.xlsx"
                   onChange={(e) => setImportFile(e.target.files?.[0] || null)}
                   className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
                 />

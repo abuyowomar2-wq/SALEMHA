@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Merchant;
 use App\Models\Order;
 use App\Services\DeliveryService;
 use Illuminate\Http\JsonResponse;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class ImportController extends Controller
 {
@@ -30,34 +30,44 @@ class ImportController extends Controller
         $request = request();
 
         if (! $request->hasFile('file')) {
-            return response()->json(['message' => 'يرجى رفع ملف CSV'], 422);
+            return response()->json(['message' => 'يرجى رفع ملف CSV أو XLSX'], 422);
         }
 
         $file = $request->file('file');
+        $ext = strtolower($file->getClientOriginalExtension());
 
-        if (! in_array($file->getClientOriginalExtension(), ['csv', 'txt'])) {
-            return response()->json(['message' => 'الملف يجب أن يكون بصيغة CSV'], 422);
-        }
-
-        $handle = fopen($file->getRealPath(), 'r');
-        if ($handle === false) {
-            return response()->json(['message' => 'تعذر قراءة الملف'], 422);
+        if (! in_array($ext, ['csv', 'txt', 'xlsx'])) {
+            return response()->json(['message' => 'الملف يجب أن يكون بصيغة CSV أو XLSX'], 422);
         }
 
         $merchant = $request->user()->merchant;
-        $imported = 0;
-        $skipped = 0;
-        $rowNumber = 0;
-
         $deliveryService = app(DeliveryService::class);
 
-        while (($row = fgetcsv($handle)) !== false) {
-            $rowNumber++;
+        $rows = [];
 
-            if ($rowNumber === 1) {
-                continue;
+        if ($ext === 'xlsx') {
+            $spreadsheet = IOFactory::load($file->getRealPath());
+            $worksheet = $spreadsheet->getActiveSheet();
+            $rows = $worksheet->toArray();
+            array_shift($rows);
+        } else {
+            $handle = fopen($file->getRealPath(), 'r');
+            if ($handle === false) {
+                return response()->json(['message' => 'تعذر قراءة الملف'], 422);
             }
+            $rowNumber = 0;
+            while (($row = fgetcsv($handle)) !== false) {
+                $rowNumber++;
+                if ($rowNumber === 1) continue;
+                $rows[] = $row;
+            }
+            fclose($handle);
+        }
 
+        $imported = 0;
+        $skipped = 0;
+
+        foreach ($rows as $row) {
             $orderNumber = trim($row[0] ?? '');
             $customerName = trim($row[1] ?? '');
             $customerPhone = trim($row[2] ?? '');
@@ -92,8 +102,6 @@ class ImportController extends Controller
             $deliveryService->createDeliveryLink($order);
             $imported++;
         }
-
-        fclose($handle);
 
         return response()->json([
             'message' => "تم استيراد {$imported} طلب جديد. تم تخطي {$skipped} طلب.",
