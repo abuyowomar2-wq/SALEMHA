@@ -56,6 +56,7 @@ const logLabels: Record<string, string> = {
   order_cancelled: "تم إلغاء الطلب",
 };
 
+// Sallemha Orders Page v2
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
