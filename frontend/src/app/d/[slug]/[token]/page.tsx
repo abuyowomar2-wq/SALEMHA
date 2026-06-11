@@ -3,7 +3,8 @@
 import { useState, useEffect, FormEvent } from "react";
 import { useParams } from "next/navigation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = API_BASE.endsWith("/api") ? API_BASE : `${API_BASE}/api`;
 
 type DeliveryInfo = {
   store_name: string;
