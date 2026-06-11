@@ -1,0 +1,72 @@
+services:
+  # ============================================
+  # PostgreSQL Database
+  # ============================================
+  - type: pserv
+    name: sallemha-db
+    env: docker
+    plan: free
+    ipAllowList: []
+
+  # ============================================
+  # Laravel Backend API
+  # ============================================
+  - type: web
+    name: sallemha-api
+    env: docker
+    plan: free
+    rootDir: backend
+    buildCommand: composer install --no-dev --optimize-autoloader
+    startCommand: php artisan migrate --force --seed && php artisan serve --host=0.0.0.0 --port=$PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_NAME
+        value: "سلمها"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_TIMEZONE
+        value: Asia/Riyadh
+      - key: APP_LOCALE
+        value: ar
+      - key: FRONTEND_URL
+        sync: false
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: sallemha-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: sallemha-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: sallemha-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: sallemha-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: sallemha-db
+          property: password
+      - key: APP_KEY
+        generateValue: true
+
+  # ============================================
+  # Next.js Frontend
+  # ============================================
+  - type: web
+    name: sallemha-frontend
+    env: docker
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm start -- -p $PORT
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
