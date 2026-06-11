@@ -6,7 +6,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://sallemha-frontend.onrender.com'],
+    'allowed_origins' => ['https://salemha-1.onrender.com', 'https://sallemha-frontend.onrender.com'],
 
     'allowed_origins_patterns' => ['#^https://.*\.onrender\.com$#'],
 
