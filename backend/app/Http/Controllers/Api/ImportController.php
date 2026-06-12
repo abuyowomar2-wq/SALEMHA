@@ -32,18 +32,44 @@ class ImportController extends Controller
         $request = request();
 
         try {
-            if (! $request->hasFile('file')) {
-                return response()->json(['message' => 'يرجى رفع ملف CSV أو XLSX'], 422);
+            $rows = null;
+
+            if ($request->input('text')) {
+                $raw = $request->input('text');
+                $raw = ltrim($raw, "\xEF\xBB\xBF");
+                $raw = preg_replace('/^sep=.*\r?\n/', '', $raw);
+
+                $stream = fopen('php://temp', 'r+');
+                fwrite($stream, $raw);
+                rewind($stream);
+
+                $firstLine = fgets($stream);
+                if ($firstLine !== false) {
+                    rewind($stream);
+                    $delimiter = substr_count($firstLine, ';') > substr_count($firstLine, ',') ? ';' : ',';
+
+                    $rows = [];
+                    $rowNumber = 0;
+                    while (($row = fgetcsv($stream, 0, $delimiter)) !== false) {
+                        $rowNumber++;
+                        if ($rowNumber === 1) continue;
+                        $row = array_map(fn ($v) => trim((string) $v, "\"' \t\n\r\0\x0B"), $row);
+                        if (array_filter($row, fn ($v) => $v !== '')) $rows[] = $row;
+                    }
+                }
+                fclose($stream);
+            } elseif ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $ext = strtolower($file->getClientOriginalExtension());
+
+                if (! in_array($ext, ['csv', 'txt', 'xlsx'])) {
+                    return response()->json(['message' => 'الملف يجب أن يكون بصيغة CSV أو XLSX'], 422);
+                }
+
+                $rows = $ext === 'xlsx' ? $this->parseXlsx($file->getRealPath()) : $this->parseCsv($file->getRealPath());
+            } else {
+                return response()->json(['message' => 'يرجى رفع ملف أو لصق النص'], 422);
             }
-
-            $file = $request->file('file');
-            $ext = strtolower($file->getClientOriginalExtension());
-
-            if (! in_array($ext, ['csv', 'txt', 'xlsx'])) {
-                return response()->json(['message' => 'الملف يجب أن يكون بصيغة CSV أو XLSX'], 422);
-            }
-
-            $rows = $ext === 'xlsx' ? $this->parseXlsx($file->getRealPath()) : $this->parseCsv($file->getRealPath());
 
         if ($rows === null) {
             return response()->json(['message' => 'تعذر قراءة الملف'], 422);
