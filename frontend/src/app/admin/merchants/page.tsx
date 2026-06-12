@@ -16,7 +16,10 @@ export default function AdminMerchants() {
   const fetchMerchants = () => {
     const token = getToken();
     if (!token) return;
-    api.get<any>("/admin/merchants", token).then((d) => { setMerchants(d.data || []); setLoading(false); });
+    api.get<any>("/admin/merchants", token).then((d) => {
+      setMerchants(Array.isArray(d.data) ? d.data : (d.data?.data || []));
+      setLoading(false);
+    }).catch(() => setLoading(false));
   };
 
   useEffect(() => { fetchMerchants(); }, []);
