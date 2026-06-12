@@ -18,6 +18,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [user, setUserState] = useState<any>(null);
 
   useEffect(() => {
+    if (pathname === "/admin/login") return;
     const u = getUser();
     if (!u || u.role !== "admin") {
       removeToken();
@@ -26,7 +27,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       return;
     }
     setUserState(u);
-  }, [router]);
+  }, [router, pathname]);
 
   const handleLogout = () => {
     removeToken();
