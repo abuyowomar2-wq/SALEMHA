@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('store_name');
             $table->string('store_slug')->unique();
             $table->string('logo_url')->nullable();
-            $table->string('primary_color')->default('#2563EB');
+            $table->string('primary_color')->default('#1659D3');
             $table->string('verification_method')->default('order_number_phone');
             $table->boolean('is_active')->default(true);
             $table->jsonb('settings')->nullable();

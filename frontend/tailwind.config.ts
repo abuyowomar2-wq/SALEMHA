@@ -12,8 +12,17 @@ const config: Config = {
         sans: ["var(--font-tajawal)", "sans-serif"],
       },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        brand: {
+          navy: "#021E4B",
+          blue: "#1659D3",
+          turquoise: "#08CFB9",
+          light: "#89CDD6",
+          gray: "#7B88A2",
+          dark: "#01103B",
+        },
+      },
+      backgroundImage: {
+        "brand-gradient": "linear-gradient(90deg, #1659D3 0%, #0F7BBC 45%, #08CFB9 100%)",
       },
     },
   },

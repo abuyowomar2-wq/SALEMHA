@@ -30,7 +30,7 @@ export default function RegisterPage() {
       const data = await api.post<any>("/auth/register", form);
       setToken(data.token);
       setUser(data.user);
-      router.push("/");
+      router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || Object.values(err.errors || {}).flat().join(", "));
     } finally {
@@ -51,8 +51,8 @@ export default function RegisterPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
         <div className="mb-6 text-center">
-          <h1 className="text-3xl font-bold text-gray-900">سلّمها</h1>
-          <p className="mt-2 text-sm text-gray-500">إنشاء حساب تاجر جديد</p>
+          <h1 className="text-3xl font-bold text-brand-navy">سلّمها</h1>
+          <p className="mt-2 text-sm text-brand-gray">إنشاء حساب تاجر جديد</p>
         </div>
 
         {error && (

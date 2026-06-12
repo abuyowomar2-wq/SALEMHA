@@ -135,7 +135,7 @@ export default function DeliveryPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const primaryColor = info?.primary_color || "#2563EB";
+  const primaryColor = info?.primary_color || "#1659D3";
 
   if (step === "loading") {
     return (

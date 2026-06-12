@@ -16,12 +16,11 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       const data = await api.post<any>("/auth/login", { email, password });
       setToken(data.token);
       setUser(data.user);
-      router.push("/");
+      router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة");
     } finally {
@@ -33,59 +32,31 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900">سلّمها</h1>
-          <p className="mt-2 text-sm text-gray-500">تسجيل الدخول للوحة التحكم</p>
+          <h1 className="text-3xl font-bold text-brand-navy">سلّمها</h1>
+          <p className="mt-2 text-sm text-brand-gray">تسجيل الدخول للوحة التحكم</p>
         </div>
 
         {error && (
-          <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
-            {error}
-          </div>
+          <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              البريد الإلكتروني
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-              required
-              dir="ltr"
-            />
+            <label className="block text-sm font-medium text-gray-700 mb-1">البريد الإلكتروني</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none" required dir="ltr" />
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              كلمة المرور
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-              required
-              dir="ltr"
-            />
+            <label className="block text-sm font-medium text-gray-700 mb-1">كلمة المرور</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none" required dir="ltr" />
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition"
-          >
+          <button type="submit" disabled={loading} className="w-full rounded-lg bg-brand-blue py-2.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50 transition">
             {loading ? "جاري الدخول..." : "دخول"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="mt-6 text-center text-sm text-brand-gray">
           ليس لديك حساب؟{" "}
-          <Link href="/register" className="text-blue-600 hover:underline">
-            إنشاء حساب جديد
-          </Link>
+          <Link href="/register" className="text-brand-blue hover:underline">إنشاء حساب جديد</Link>
         </p>
       </div>
     </div>

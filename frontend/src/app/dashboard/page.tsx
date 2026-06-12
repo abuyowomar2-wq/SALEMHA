@@ -69,7 +69,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-4 border-brand-blue border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -79,7 +79,7 @@ export default function DashboardPage() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <p className="text-red-500 mb-2">{error}</p>
-          <button onClick={() => window.location.reload()} className="text-sm text-blue-600 hover:underline">إعادة المحاولة</button>
+          <button onClick={() => window.location.reload()} className="text-sm text-brand-blue hover:underline">إعادة المحاولة</button>
         </div>
       </div>
     );
@@ -87,7 +87,7 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">لوحة التحكم</h2>
+      <h2 className="text-2xl font-bold text-brand-navy mb-6">لوحة التحكم</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard title="إجمالي الطلبات" value={stats?.total_orders ?? 0} color="blue" />
@@ -98,7 +98,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-5">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">آخر الطلبات</h3>
+          <h3 className="text-lg font-semibold text-brand-navy mb-4">آخر الطلبات</h3>
           {recent.length === 0 ? (
             <p className="text-sm text-gray-400">لا توجد طلبات بعد</p>
           ) : (
