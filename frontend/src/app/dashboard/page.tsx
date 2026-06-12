@@ -94,10 +94,10 @@ export default function DashboardPage() {
       <h2 className="text-2xl font-bold text-brand-navy mb-6">لوحة التحكم</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard title="إجمالي الطلبات" value={stats?.total_orders ?? 0} color="blue" />
-        <StatCard title="الطلبات المسلمة" value={stats?.delivered_orders ?? 0} color="green" />
-        <StatCard title="طلبات معلقة" value={stats?.pending_orders ?? 0} color="yellow" />
-        <StatCard title="المخزون المتاح" value={stats?.available_inventory ?? 0} color="purple" />
+        <StatCard title="إجمالي الطلبات" value={stats?.total_orders ?? 0} />
+        <StatCard title="الطلبات المسلمة" value={stats?.delivered_orders ?? 0} />
+        <StatCard title="طلبات معلقة" value={stats?.pending_orders ?? 0} />
+        <StatCard title="المخزون المتاح" value={stats?.available_inventory ?? 0} />
       </div>
 
       {stats?.plan !== "professional" && stats?.plan_percentages && (
@@ -167,7 +167,7 @@ export default function DashboardPage() {
   );
 }
 
-function StatCard({ title, value, color }: { title: string; value: number; color: string }) {
+function StatCard({ title, value }: { title: string; value: number; color?: string }) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5">
       <p className="text-sm text-gray-500">{title}</p>
