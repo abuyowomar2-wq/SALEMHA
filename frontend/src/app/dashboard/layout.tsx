@@ -10,6 +10,7 @@ const navItems = [
   { href: "/dashboard/products", label: "المنتجات", icon: "📦" },
   { href: "/dashboard/orders", label: "الطلبات", icon: "📋" },
   { href: "/dashboard/customers", label: "العملاء", icon: "👥" },
+  { href: "/dashboard/subscription", label: "الاشتراك", icon: "💎" },
   { href: "/dashboard/settings", label: "الإعدادات", icon: "⚙️" },
 ];
 

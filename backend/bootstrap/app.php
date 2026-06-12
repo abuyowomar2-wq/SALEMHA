@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'merchant' => \App\Http\Middleware\MerchantOwnership::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'plan.limit' => \App\Http\Middleware\CheckPlanLimit::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

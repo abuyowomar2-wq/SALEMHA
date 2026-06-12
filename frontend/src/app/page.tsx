@@ -22,9 +22,9 @@ const steps = [
 ];
 
 const plans = [
-  { name: "بداية", price: "مجاني", features: ["حتى ١٠ منتجات", "حتى ١٠٠ عنصر مخزون", "روابط تسليم آمنة", "لوحة تحكم أساسية"], color: "from-brand-light to-brand-gray", popular: false },
-  { name: "نمو", price: "قريبًا", features: ["حتى ٥٠ منتج", "حتى ٥٠٠٠ عنصر مخزون", "استيراد الطلبات", "إحصائيات متقدمة", "دعم فني مباشر"], color: "from-brand-blue to-brand-turquoise", popular: true },
-  { name: "احترافية", price: "قريبًا", features: ["منتجات غير محدودة", "مخزون غير محدود", "تكامل API", "وايت ليبل", "دعم VIP"], color: "from-brand-navy to-brand-blue", popular: false },
+  { name: "بداية", price: "مجاني للأبد", features: ["حتى ١٠ منتجات", "حتى ١٠٠ عنصر مخزون", "١٠ طلبات شهريًا", "روابط تسليم آمنة", "لوحة تحكم أساسية"], color: "from-brand-light to-brand-gray", popular: false },
+  { name: "نمو", price: "75.99 ريال/شهر", features: ["حتى ٥٠ منتج", "حتى ٥,٠٠٠ عنصر مخزون", "٥٠٠ طلب شهريًا", "شعارك + لونك", "إحصائيات متقدمة"], color: "from-brand-blue to-brand-turquoise", popular: true, yearly: "53 ريال/شهر (سنوي)" },
+  { name: "احترافية", price: "99 ريال/شهر", features: ["منتجات غير محدودة", "مخزون غير محدود", "طلبات غير محدودة", "إزالة علامة سلّمها", "دعم VIP"], color: "from-brand-navy to-brand-blue", popular: false, yearly: "69 ريال/شهر (سنوي)" },
 ];
 
 export default function LandingPage() {
@@ -145,7 +145,8 @@ export default function LandingPage() {
                   <div className="absolute -top-3 right-4 rounded-full bg-brand-gradient px-4 py-1 text-xs font-bold text-white shadow">الأكثر طلبًا</div>
                 )}
                 <h3 className="text-lg font-bold text-brand-navy mb-1">{plan.name}</h3>
-                <div className="text-3xl font-extrabold text-brand-navy mb-4">{plan.price}</div>
+                <div className="text-3xl font-extrabold text-brand-navy mb-1">{plan.price}</div>
+                {plan.yearly && <div className="text-sm text-brand-turquoise font-medium mb-3">{plan.yearly}</div>}
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm text-brand-gray">
@@ -158,7 +159,7 @@ export default function LandingPage() {
                     ? "bg-brand-gradient text-white shadow-lg hover:opacity-90"
                     : "border-2 border-brand-navy text-brand-navy hover:bg-brand-navy/5"
                 }`}>
-                  {plan.price === "مجاني" ? "ابدأ الآن" : "قريبًا"}
+                  {plan.name === "بداية" ? "ابدأ مجانًا" : "ابدأ الآن"}
                 </Link>
               </div>
             ))}

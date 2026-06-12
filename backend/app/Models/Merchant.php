@@ -13,6 +13,7 @@ class Merchant extends Model
         'logo_url',
         'primary_color',
         'verification_method',
+        'plan',
         'is_active',
         'settings',
     ];

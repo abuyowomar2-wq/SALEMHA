@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\AdminSubscriptionController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\DashboardController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SettingsController;
+use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -69,11 +71,12 @@ Route::prefix('merchant')->middleware(['auth:sanctum', 'merchant'])->group(funct
     Route::put('/settings', [SettingsController::class, 'update']);
 
     // Customers
-    Route::get('/customers', [CustomerController::class, 'index']);
-    Route::post('/customers', [CustomerController::class, 'store']);
-    Route::get('/customers/{customer}', [CustomerController::class, 'show']);
-    Route::put('/customers/{customer}', [CustomerController::class, 'update']);
     Route::delete('/customers/{customer}', [CustomerController::class, 'destroy']);
+
+    // Subscription
+    Route::get('/subscription', [SubscriptionController::class, 'current']);
+    Route::post('/subscription/upgrade', [SubscriptionController::class, 'upgrade']);
+    Route::get('/subscription/history', [SubscriptionController::class, 'history']);
 });
 
 /*
@@ -98,4 +101,9 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::get('/merchants/{merchant}', [AdminController::class, 'showMerchant']);
     Route::put('/merchants/{merchant}/status', [AdminController::class, 'updateMerchantStatus']);
     Route::get('/stats', [AdminController::class, 'stats']);
+
+    // Subscription Management
+    Route::get('/subscriptions', [AdminSubscriptionController::class, 'index']);
+    Route::post('/subscriptions/{subscription}/approve', [AdminSubscriptionController::class, 'approve']);
+    Route::post('/subscriptions/{subscription}/reject', [AdminSubscriptionController::class, 'reject']);
 });
