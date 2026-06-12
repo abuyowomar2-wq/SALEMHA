@@ -179,7 +179,11 @@ export default function LandingPage() {
             <img src="/logo.png" alt="سلّمها" className="w-8 h-8 rounded-lg" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
             <span className="text-lg font-bold text-brand-navy">سلّمها</span>
           </div>
-          <p className="text-sm text-brand-gray mb-4">منصة تسليم المنتجات الرقمية لمتاجر سلة</p>
+          <p className="text-sm text-brand-gray mb-2">منصة تسليم المنتجات الرقمية لمتاجر سلة</p>
+          <div className="flex justify-center gap-4 mb-4">
+            <Link href="/terms" className="text-xs text-brand-gray hover:text-brand-blue transition">الشروط والأحكام</Link>
+            <Link href="/privacy" className="text-xs text-brand-gray hover:text-brand-blue transition">سياسة الخصوصية</Link>
+          </div>
           <p className="text-xs text-brand-gray/60">© ٢٠٢٦ سلّمها. جميع الحقوق محفوظة.</p>
         </div>
       </footer>
