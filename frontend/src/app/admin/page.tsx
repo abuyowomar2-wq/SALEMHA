@@ -20,10 +20,10 @@ export default function AdminDashboard() {
       <h2 className="text-2xl font-bold text-brand-navy mb-6">لوحة سوبر أدمن</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard title="إجمالي المتاجر" value={stats?.total_merchants ?? 0} color="blue" />
-        <StatCard title="المتاجر النشطة" value={stats?.active_merchants ?? 0} color="green" />
-        <StatCard title="إجمالي الطلبات" value={stats?.total_orders ?? 0} color="purple" />
-        <StatCard title="الطلبات المسلمة" value={stats?.delivered_orders ?? 0} color="turquoise" />
+        <StatCard title="إجمالي المتاجر" value={stats?.total_merchants ?? 0} />
+        <StatCard title="المتاجر النشطة" value={stats?.active_merchants ?? 0} />
+        <StatCard title="إجمالي الطلبات" value={stats?.total_orders ?? 0} />
+        <StatCard title="الطلبات المسلمة" value={stats?.delivered_orders ?? 0} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -35,8 +35,7 @@ export default function AdminDashboard() {
   );
 }
 
-function StatCard({ title, value, color }: { title: string; value: number; color: string }) {
-  const colors: Record<string, string> = { blue: "bg-blue-50 text-blue-700", green: "bg-green-50 text-green-700", purple: "bg-purple-50 text-purple-700", turquoise: "bg-brand-turquoise/10 text-brand-turquoise" };
+function StatCard({ title, value }: { title: string; value: number; color?: string }) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5">
       <p className="text-sm text-brand-gray">{title}</p>
