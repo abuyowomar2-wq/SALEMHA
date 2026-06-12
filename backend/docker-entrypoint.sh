@@ -6,6 +6,9 @@ if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
 
+# Create storage symlink for logos
+php artisan storage:link --force 2>/dev/null || echo "storage:link skipped"
+
 # Try running migrations (don't block if DB not ready yet)
 php artisan migrate --force --seed 2>/dev/null || echo "DB not ready yet, will retry on next deploy"
 
