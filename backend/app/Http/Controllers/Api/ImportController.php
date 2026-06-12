@@ -18,8 +18,9 @@ class ImportController extends Controller
     {
         return response()->stream(function () {
             echo "\xEF\xBB\xBF";
-            echo "رقم_الطلب,اسم_العميل,رقم_الجوال,البريد_الإلكتروني,اسم_المنتج,ملاحظات\n";
-            echo "1001,أحمد محمد,0500000000,ahmed@example.com,بطاقة ستيم,طلب تجريبي\n";
+            echo "sep=;\n";
+            echo "رقم_الطلب;اسم_العميل;رقم_الجوال;البريد_الإلكتروني;اسم_المنتج;ملاحظات\n";
+            echo "1001;أحمد محمد;0500000000;ahmed@example.com;اسم المنتج هنا;طلب تجريبي\n";
         }, 200, [
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="orders_template.csv"',
@@ -208,19 +209,40 @@ class ImportController extends Controller
 
     private function parseCsv(string $path): ?array
     {
-        $handle = fopen($path, 'r');
-        if ($handle === false) return null;
+        $content = file_get_contents($path);
+        if ($content === false) return null;
+
+        $content = ltrim($content, "\xEF\xBB\xBF");
+        $content = preg_replace('/^sep=.*\r?\n/', '', $content);
+
+        $tmpFile = tempnam(sys_get_temp_dir(), 'csv_');
+        file_put_contents($tmpFile, $content);
+
+        $handle = fopen($tmpFile, 'r');
+        if ($handle === false) { unlink($tmpFile); return null; }
+
+        $firstLine = fgets($handle);
+        if ($firstLine === false) { fclose($handle); unlink($tmpFile); return null; }
+        rewind($handle);
+
+        $delimiter = substr_count($firstLine, ';') > substr_count($firstLine, ',') ? ';' : ',';
 
         $rows = [];
         $rowNumber = 0;
-        while (($row = fgetcsv($handle)) !== false) {
+
+        while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
             $rowNumber++;
             if ($rowNumber === 1) continue;
-            $trimmed = array_map('trim', $row);
-            if (array_filter($trimmed, fn ($v) => $v !== '')) $rows[] = $trimmed;
+
+            $row = array_map(fn ($v) => trim((string) $v, "\"' \t\n\r\0\x0B"), $row);
+
+            if (array_filter($row, fn ($v) => $v !== '')) {
+                $rows[] = $row;
+            }
         }
 
         fclose($handle);
+        unlink($tmpFile);
         return $rows;
     }
 }
