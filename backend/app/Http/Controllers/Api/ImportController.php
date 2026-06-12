@@ -30,18 +30,19 @@ class ImportController extends Controller
     {
         $request = request();
 
-        if (! $request->hasFile('file')) {
-            return response()->json(['message' => 'يرجى رفع ملف CSV أو XLSX'], 422);
-        }
+        try {
+            if (! $request->hasFile('file')) {
+                return response()->json(['message' => 'يرجى رفع ملف CSV أو XLSX'], 422);
+            }
 
-        $file = $request->file('file');
-        $ext = strtolower($file->getClientOriginalExtension());
+            $file = $request->file('file');
+            $ext = strtolower($file->getClientOriginalExtension());
 
-        if (! in_array($ext, ['csv', 'txt', 'xlsx'])) {
-            return response()->json(['message' => 'الملف يجب أن يكون بصيغة CSV أو XLSX'], 422);
-        }
+            if (! in_array($ext, ['csv', 'txt', 'xlsx'])) {
+                return response()->json(['message' => 'الملف يجب أن يكون بصيغة CSV أو XLSX'], 422);
+            }
 
-        $rows = $ext === 'xlsx' ? $this->parseXlsx($file->getRealPath()) : $this->parseCsv($file->getRealPath());
+            $rows = $ext === 'xlsx' ? $this->parseXlsx($file->getRealPath()) : $this->parseCsv($file->getRealPath());
 
         if ($rows === null) {
             return response()->json(['message' => 'تعذر قراءة الملف'], 422);
@@ -133,9 +134,14 @@ class ImportController extends Controller
             'no_product' => $noProduct,
             'skipped' => $skipped,
         ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'فشل الاستيراد: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
-    private function claimItem(Order $order, int $productId): void
+    private function claimItem(Order $order, ?int $productId): void
     {
         DB::transaction(function () use ($order, $productId) {
             $item = InventoryItem::where('product_id', $productId)
