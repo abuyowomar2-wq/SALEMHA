@@ -17,23 +17,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [user, setUserState] = useState<any>(null);
 
+  const isLoginPage = pathname === "/admin/login";
+
   useEffect(() => {
-    if (pathname === "/admin/login") return;
+    if (isLoginPage) return;
     const u = getUser();
     if (!u || u.role !== "admin") {
       removeToken();
       removeUser();
-      router.push("/login");
+      router.push("/admin/login");
       return;
     }
     setUserState(u);
-  }, [router, pathname]);
+  }, [router, pathname, isLoginPage]);
 
   const handleLogout = () => {
     removeToken();
     removeUser();
-    router.push("/login");
+    router.push("/admin/login");
   };
+
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
 
   if (!user) return (
     <div className="flex min-h-screen items-center justify-center bg-brand-dark"><div className="h-10 w-10 border-4 border-brand-turquoise border-t-transparent rounded-full animate-spin" /></div>
