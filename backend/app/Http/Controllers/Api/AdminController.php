@@ -64,6 +64,7 @@ class AdminController extends Controller
             'total_orders' => Order::count(),
             'delivered_orders' => Order::where('delivery_status', 'product_viewed')->count(),
             'pending_orders' => Order::where('status', 'pending')->count(),
+            'orders' => Order::with('merchant:id,store_name')->latest()->limit(100)->get(),
         ]);
     }
 }
