@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Merchant;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
@@ -26,6 +28,37 @@ class AdminController extends Controller
             ->paginate(20);
 
         return response()->json($merchants);
+    }
+
+    public function storeMerchant(): JsonResponse
+    {
+        $validated = request()->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8'],
+            'store_name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => $validated['password'],
+            'role' => 'merchant',
+            'is_active' => true,
+        ]);
+
+        $merchant = Merchant::create([
+            'user_id' => $user->id,
+            'store_name' => $validated['store_name'],
+            'store_slug' => Str::slug($validated['store_name']) . '-' . Str::random(6),
+            'primary_color' => '#1659D3',
+            'plan' => 'starter',
+        ]);
+
+        return response()->json([
+            'message' => 'تم إنشاء المتجر بنجاح',
+            'merchant' => $merchant->load('user:id,name,email,is_active'),
+        ], 201);
     }
 
     public function showMerchant(Merchant $merchant): JsonResponse

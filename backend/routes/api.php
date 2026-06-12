@@ -98,6 +98,7 @@ Route::prefix('delivery')->group(function () {
 */
 Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/merchants', [AdminController::class, 'merchants']);
+    Route::post('/merchants', [AdminController::class, 'storeMerchant']);
     Route::get('/merchants/{merchant}', [AdminController::class, 'showMerchant']);
     Route::put('/merchants/{merchant}/status', [AdminController::class, 'updateMerchantStatus']);
     Route::get('/stats', [AdminController::class, 'stats']);
