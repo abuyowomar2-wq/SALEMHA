@@ -28,7 +28,7 @@ export default function AdminLoginPage() {
       setToken(data.token);
       setUser(data.user);
       router.push("/admin");
-    } catch (err: any) {
+    } catch {
       setError("بريد إلكتروني أو كلمة مرور غير صحيحة");
     } finally {
       setLoading(false);
