@@ -134,7 +134,7 @@ class ImportController extends Controller
             'no_product' => $noProduct,
             'skipped' => $skipped,
         ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'فشل الاستيراد: ' . $e->getMessage(),
             ], 500);
@@ -214,22 +214,20 @@ class ImportController extends Controller
         $content = ltrim($content, "\xEF\xBB\xBF");
         $content = preg_replace('/^sep=.*\r?\n/', '', $content);
 
-        $tmpFile = tempnam(sys_get_temp_dir(), 'csv_');
-        file_put_contents($tmpFile, $content);
+        $stream = fopen('php://temp', 'r+');
+        fwrite($stream, $content);
+        rewind($stream);
 
-        $handle = fopen($tmpFile, 'r');
-        if ($handle === false) { unlink($tmpFile); return null; }
-
-        $firstLine = fgets($handle);
-        if ($firstLine === false) { fclose($handle); unlink($tmpFile); return null; }
-        rewind($handle);
+        $firstLine = fgets($stream);
+        if ($firstLine === false) { fclose($stream); return null; }
+        rewind($stream);
 
         $delimiter = substr_count($firstLine, ';') > substr_count($firstLine, ',') ? ';' : ',';
 
         $rows = [];
         $rowNumber = 0;
 
-        while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+        while (($row = fgetcsv($stream, 0, $delimiter)) !== false) {
             $rowNumber++;
             if ($rowNumber === 1) continue;
 
@@ -240,8 +238,7 @@ class ImportController extends Controller
             }
         }
 
-        fclose($handle);
-        unlink($tmpFile);
+        fclose($stream);
         return $rows;
     }
 }
