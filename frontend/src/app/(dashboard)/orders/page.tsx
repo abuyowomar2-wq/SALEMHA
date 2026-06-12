@@ -281,7 +281,7 @@ export default function OrdersPage() {
               </div>
 
               {importResult && (
-                <div className={`rounded-lg p-3 text-sm ${importResult.includes("فشل") || importResult.includes("خطأ") ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600"}`}>
+                <div className={`rounded-lg p-3 text-sm whitespace-pre-line ${importResult.includes("فشل") || importResult.includes("خطأ") ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600"}`}>
                   {importResult}
                 </div>
               )}
