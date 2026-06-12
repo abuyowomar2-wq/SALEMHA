@@ -12,6 +12,10 @@ type Stats = {
   total_inventory: number;
   available_inventory: number;
   low_stock_alerts: { id: number; name: string; available: number }[];
+  plan: string;
+  plan_label: string;
+  plan_limits: { products: number; inventory: number; monthly_orders: number };
+  plan_percentages: { products_pct: number; inventory_pct: number; orders_pct: number };
 };
 
 type RecentOrder = {
@@ -96,6 +100,20 @@ export default function DashboardPage() {
         <StatCard title="المخزون المتاح" value={stats?.available_inventory ?? 0} color="purple" />
       </div>
 
+      {stats?.plan !== "professional" && stats?.plan_percentages && (
+        <div className="bg-white rounded-xl border border-gray-200 p-5 mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-brand-navy">حدود الباقة - {stats.plan_label}</h3>
+            <a href="/dashboard/subscription" className="text-xs text-brand-blue hover:underline">ترقية الباقة</a>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <LimitBar label="المنتجات" pct={stats.plan_percentages.products_pct} />
+            <LimitBar label="المخزون" pct={stats.plan_percentages.inventory_pct} />
+            <LimitBar label="الطلبات الشهرية" pct={stats.plan_percentages.orders_pct} />
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-5">
           <h3 className="text-lg font-semibold text-brand-navy mb-4">آخر الطلبات</h3>
@@ -150,19 +168,25 @@ export default function DashboardPage() {
 }
 
 function StatCard({ title, value, color }: { title: string; value: number; color: string }) {
-  const colors: Record<string, string> = {
-    blue: "bg-blue-50 text-blue-700",
-    green: "bg-green-50 text-green-700",
-    yellow: "bg-yellow-50 text-yellow-700",
-    purple: "bg-purple-50 text-purple-700",
-  };
-
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5">
       <p className="text-sm text-gray-500">{title}</p>
-      <p className={`text-3xl font-bold mt-1 ${colors[color] || ""} bg-transparent`}>
-        {value}
-      </p>
+      <p className="text-3xl font-bold mt-1 text-brand-navy">{value}</p>
+    </div>
+  );
+}
+
+function LimitBar({ label, pct }: { label: string; pct: number }) {
+  const color = pct >= 100 ? "bg-red-500" : pct >= 80 ? "bg-yellow-500" : "bg-brand-turquoise";
+  return (
+    <div>
+      <div className="flex justify-between text-xs mb-1">
+        <span className="text-brand-gray">{label}</span>
+        <span className={`font-medium ${pct >= 80 ? "text-red-500" : "text-brand-navy"}`}>{pct}%</span>
+      </div>
+      <div className="w-full bg-gray-100 rounded-full h-2">
+        <div className={`h-2 rounded-full transition ${color}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+      </div>
     </div>
   );
 }

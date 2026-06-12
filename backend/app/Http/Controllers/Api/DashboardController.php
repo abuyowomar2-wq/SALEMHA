@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\InventoryItem;
 use App\Models\Order;
 use App\Models\Product;
+use App\Services\SubscriptionService;
 use Illuminate\Http\JsonResponse;
 
 class DashboardController extends Controller
@@ -37,6 +38,10 @@ class DashboardController extends Controller
             ])
             ->values();
 
+        $subscriptionService = app(SubscriptionService::class);
+        $planLimits = $subscriptionService->getUsage($merchant);
+        $percentages = $subscriptionService->usagePercentage($merchant);
+
         return response()->json([
             'total_orders' => $totalOrders,
             'delivered_orders' => $deliveredOrders,
@@ -45,6 +50,10 @@ class DashboardController extends Controller
             'total_inventory' => $totalInventory,
             'available_inventory' => $availableInventory,
             'low_stock_alerts' => $lowStockProducts,
+            'plan' => $planLimits['plan'],
+            'plan_label' => $planLimits['plan_label'],
+            'plan_limits' => $planLimits['limits'],
+            'plan_percentages' => $percentages,
         ]);
     }
 

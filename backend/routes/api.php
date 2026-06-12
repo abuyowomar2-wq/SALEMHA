@@ -42,21 +42,21 @@ Route::prefix('auth')->group(function () {
 Route::prefix('merchant')->middleware(['auth:sanctum', 'merchant'])->group(function () {
     // Products
     Route::get('/products', [ProductController::class, 'index']);
-    Route::post('/products', [ProductController::class, 'store']);
+    Route::post('/products', [ProductController::class, 'store'])->middleware('plan.limit:product');
     Route::get('/products/{product}', [ProductController::class, 'show']);
     Route::put('/products/{product}', [ProductController::class, 'update']);
     Route::delete('/products/{product}', [ProductController::class, 'destroy']);
 
     // Inventory
     Route::get('/products/{product}/inventory', [InventoryController::class, 'index']);
-    Route::post('/products/{product}/inventory', [InventoryController::class, 'store']);
-    Route::post('/products/{product}/inventory/bulk', [InventoryController::class, 'bulk']);
+    Route::post('/products/{product}/inventory', [InventoryController::class, 'store'])->middleware('plan.limit:inventory');
+    Route::post('/products/{product}/inventory/bulk', [InventoryController::class, 'bulk'])->middleware('plan.limit:inventory');
     Route::put('/inventory/{inventoryItem}', [InventoryController::class, 'update']);
     Route::delete('/inventory/{inventoryItem}', [InventoryController::class, 'destroy']);
 
     // Orders
     Route::get('/orders', [OrderController::class, 'index']);
-    Route::post('/orders', [OrderController::class, 'store']);
+    Route::post('/orders', [OrderController::class, 'store'])->middleware('plan.limit:order');
     Route::get('/orders/{order}', [OrderController::class, 'show']);
     Route::put('/orders/{order}', [OrderController::class, 'update']);
     Route::post('/orders/{order}/regenerate-link', [OrderController::class, 'regenerateLink']);
