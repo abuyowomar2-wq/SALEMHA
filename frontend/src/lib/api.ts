@@ -35,31 +35,31 @@ async function request<T>(endpoint: string, options: {
   return data;
 }
 
+const storage = typeof window !== "undefined" ? window.sessionStorage : null;
+
 export function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("sallemha_token");
+  return storage?.getItem("sallemha_token") ?? null;
 }
 
 export function setToken(token: string) {
-  localStorage.setItem("sallemha_token", token);
+  storage?.setItem("sallemha_token", token);
 }
 
 export function removeToken() {
-  localStorage.removeItem("sallemha_token");
+  storage?.removeItem("sallemha_token");
 }
 
 export function getUser(): any | null {
-  if (typeof window === "undefined") return null;
-  const user = localStorage.getItem("sallemha_user");
+  const user = storage?.getItem("sallemha_user");
   return user ? JSON.parse(user) : null;
 }
 
 export function setUser(user: any) {
-  localStorage.setItem("sallemha_user", JSON.stringify(user));
+  storage?.setItem("sallemha_user", JSON.stringify(user));
 }
 
 export function removeUser() {
-  localStorage.removeItem("sallemha_user");
+  storage?.removeItem("sallemha_user");
 }
 
 export const api = {
