@@ -53,7 +53,7 @@ export default function LandingPage() {
       <nav className="border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center text-white font-bold text-sm">س</div>
+            <img src="/logo.png" alt="سلّمها" className="w-8 h-8 rounded-lg" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
             <span className="text-xl font-bold text-brand-navy">سلّمها</span>
           </div>
           <Link href="/login" className="rounded-lg bg-brand-blue px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition">دخول</Link>
@@ -170,7 +170,7 @@ export default function LandingPage() {
       <footer className="border-t border-gray-100 py-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center text-white font-bold text-sm">س</div>
+            <img src="/logo.png" alt="سلّمها" className="w-8 h-8 rounded-lg" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
             <span className="text-lg font-bold text-brand-navy">سلّمها</span>
           </div>
           <p className="text-sm text-brand-gray mb-4">منصة تسليم المنتجات الرقمية لمتاجر سلة</p>
