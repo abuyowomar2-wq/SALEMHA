@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SettingsController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ImportController;
 use Illuminate\Support\Facades\Route;
 
@@ -69,13 +70,7 @@ Route::prefix('merchant')->middleware(['auth:sanctum', 'merchant'])->group(funct
     Route::get('/settings', [SettingsController::class, 'show']);
     Route::put('/settings', [SettingsController::class, 'update']);
 
-    // Import
-    Route::post('/orders/import', [ImportController::class, 'orders']);
-    Route::get('/orders/template', [ImportController::class, 'template']);
-
     // Customers
-    Route::get('/customers/template', [CustomerController::class, 'template']);
-    Route::post('/customers/import', [CustomerController::class, 'import']);
     Route::get('/customers', [CustomerController::class, 'index']);
     Route::post('/customers', [CustomerController::class, 'store']);
     Route::get('/customers/{customer}', [CustomerController::class, 'show']);

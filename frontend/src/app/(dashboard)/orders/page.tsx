@@ -45,8 +45,6 @@ const deliveryLabels: Record<string, string> = {
   product_viewed: "bg-emerald-100 text-emerald-700",
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
 const logLabels: Record<string, string> = {
   link_created: "تم إنشاء الرابط",
   link_sent: "تم إرسال الرابط",
@@ -77,10 +75,6 @@ export default function OrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [logs, setLogs] = useState<DeliveryLog[]>([]);
   const [logsLoading, setLogsLoading] = useState(false);
-  const [showImport, setShowImport] = useState(false);
-  const [importFile, setImportFile] = useState<File | null>(null);
-  const [importing, setImporting] = useState(false);
-  const [importResult, setImportResult] = useState<string | null>(null);
 
   const saveOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,55 +153,8 @@ export default function OrdersPage() {
       const slug = user?.merchant?.store_slug || "";
       setCreatedLink(`${window.location.origin}/d/${slug}/${data.raw_token}`);
     }
-    setSelectedOrder(null);
+      setSelectedOrder(null);
     fetchOrders();
-  };
-
-  const downloadTemplate = async () => {
-    const token = getToken();
-    if (!token) return;
-    try {
-      const res = await fetch(`${API_BASE}/api/merchant/orders/template`, {
-        headers: { Authorization: `Bearer ${token}`, Accept: "text/csv" },
-      });
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "orders_template.csv";
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch {}
-  };
-
-  const handleImport = async () => {
-    if (!importFile) return;
-    setImporting(true);
-    setImportResult(null);
-    const token = getToken();
-    if (!token) return;
-
-    const formData = new FormData();
-    formData.append("file", importFile);
-
-    try {
-      const res = await fetch(`${API_BASE}/api/merchant/orders/import`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-        body: formData,
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setImportResult(data.message);
-        setImportFile(null);
-        fetchOrders();
-      } else {
-        setImportResult(data.message || "فشل الاستيراد");
-      }
-    } catch {
-      setImportResult("حدث خطأ");
-    }
-    setImporting(false);
   };
 
   if (loading) {
@@ -222,14 +169,9 @@ export default function OrdersPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">الطلبات</h2>
-        <div className="flex gap-2">
-          <button onClick={() => setShowImport(true)} className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50">
-            📥 استيراد Excel
-          </button>
-          <button onClick={() => setShowCreate(true)} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-            + طلب جديد
-          </button>
-        </div>
+        <button onClick={() => setShowCreate(true)} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+          + طلب جديد
+        </button>
       </div>
 
       {/* Create Modal */}
@@ -252,47 +194,6 @@ export default function OrdersPage() {
                 <button type="submit" className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">إنشاء</button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Import Modal */}
-      {showImport && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-lg">
-            <h3 className="text-lg font-semibold mb-4">📥 استيراد الطلبات من Excel</h3>
-
-            <div className="space-y-4">
-              <button onClick={downloadTemplate} className="w-full rounded-lg border border-blue-300 px-4 py-3 text-sm text-blue-600 hover:bg-blue-50">
-                📥 تحميل القالب (CSV)
-              </button>
-
-              <div className="text-center text-xs text-gray-400">— أو —</div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">رفع ملف CSV أو XLSX</label>
-                <input
-                  type="file"
-                  accept=".csv,.xlsx"
-                  onChange={(e) => setImportFile(e.target.files?.[0] || null)}
-                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
-                />
-                {importFile && <p className="text-xs text-gray-500 mt-1">{importFile.name}</p>}
-              </div>
-
-              {importResult && (
-                <div className={`rounded-lg p-3 text-sm whitespace-pre-line ${importResult.includes("فشل") || importResult.includes("خطأ") ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600"}`}>
-                  {importResult}
-                </div>
-              )}
-
-              <div className="flex gap-2 justify-end">
-                <button onClick={() => { setShowImport(false); setImportFile(null); setImportResult(null); }} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">إغلاق</button>
-                <button onClick={handleImport} disabled={!importFile || importing} className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
-                  {importing ? "جاري الاستيراد..." : "استيراد"}
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       )}

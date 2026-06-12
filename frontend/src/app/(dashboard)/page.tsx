@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { api, getToken } from "@/lib/api";
 
 type Stats = {
@@ -39,13 +40,18 @@ const statusColors: Record<string, string> = {
 };
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [recent, setRecent] = useState<RecentOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const token = getToken();
-    if (!token) return;
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
 
     Promise.all([
       api.get<any>("/merchant/dashboard/stats", token),
@@ -54,13 +60,27 @@ export default function DashboardPage() {
       setStats(s);
       setRecent(r.recent_orders || []);
       setLoading(false);
+    }).catch(() => {
+      setError("تعذر تحميل البيانات");
+      setLoading(false);
     });
-  }, []);
+  }, [router]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-500 mb-2">{error}</p>
+          <button onClick={() => window.location.reload()} className="text-sm text-blue-600 hover:underline">إعادة المحاولة</button>
+        </div>
       </div>
     );
   }
