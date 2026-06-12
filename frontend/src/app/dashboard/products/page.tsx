@@ -52,7 +52,7 @@ export default function ProductsPage() {
     api.get<any>("/merchant/products", token).then((data) => {
       setProducts(data.data || []);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   };
 
   useEffect(() => { fetchProducts(); }, []);

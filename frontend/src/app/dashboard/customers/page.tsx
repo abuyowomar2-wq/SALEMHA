@@ -25,7 +25,7 @@ export default function CustomersPage() {
     api.get<any>("/merchant/customers", token).then((data) => {
       setCustomers(data.data || []);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   };
 
   useEffect(() => { fetchCustomers(); }, []);
