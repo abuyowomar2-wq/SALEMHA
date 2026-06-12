@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getToken, getUser } from "@/lib/api";
+import { getToken } from "@/lib/api";
 
 const features = [
   { icon: "⚡", title: "تسليم تلقائي", desc: "سلّم منتجاتك الرقمية تلقائيًا فور التحقق من العميل بدون تدخل يدوي" },
@@ -33,8 +33,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     if (getToken()) {
-      const user = getUser();
-      router.replace(user?.role === "admin" ? "/admin" : "/dashboard");
+      router.replace("/dashboard");
     } else {
       setChecking(false);
     }

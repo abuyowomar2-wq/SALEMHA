@@ -4,11 +4,7 @@ import { useEffect, useState } from "react";
 import { api, getToken } from "@/lib/api";
 
 type Merchant = {
-  id: number;
-  store_name: string;
-  store_slug: string;
-  plan: string;
-  is_active: boolean;
+  id: number; store_name: string; store_slug: string; plan: string; is_active: boolean;
   user: { name: string; email: string; is_active: boolean };
   created_at: string;
 };
@@ -20,10 +16,7 @@ export default function AdminMerchants() {
   const fetchMerchants = () => {
     const token = getToken();
     if (!token) return;
-    api.get<any>("/admin/merchants", token).then((d) => {
-      setMerchants(d.data || []);
-      setLoading(false);
-    });
+    api.get<any>("/admin/merchants", token).then((d) => { setMerchants(d.data || []); setLoading(false); });
   };
 
   useEffect(() => { fetchMerchants(); }, []);
@@ -35,31 +28,31 @@ export default function AdminMerchants() {
     fetchMerchants();
   };
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin h-8 w-8 border-4 border-brand-blue border-t-transparent rounded-full" /></div>;
+  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin h-8 w-8 border-4 border-brand-turquoise border-t-transparent rounded-full" /></div>;
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-brand-navy mb-6">إدارة المتاجر</h2>
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <h2 className="text-2xl font-bold text-white mb-6">إدارة المتاجر</h2>
+      <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-white/5 border-b border-white/10">
             <tr>
-              <th className="px-4 py-3 text-right font-medium text-gray-500">المتجر</th>
-              <th className="px-4 py-3 text-right font-medium text-gray-500">المالك</th>
-              <th className="px-4 py-3 text-right font-medium text-gray-500">الباقة</th>
-              <th className="px-4 py-3 text-right font-medium text-gray-500">الحالة</th>
-              <th className="px-4 py-3 text-right font-medium text-gray-500">إجراءات</th>
+              <th className="px-4 py-3 text-right font-medium text-brand-gray">المتجر</th>
+              <th className="px-4 py-3 text-right font-medium text-brand-gray">المالك</th>
+              <th className="px-4 py-3 text-right font-medium text-brand-gray">الباقة</th>
+              <th className="px-4 py-3 text-right font-medium text-brand-gray">الحالة</th>
+              <th className="px-4 py-3 text-right font-medium text-brand-gray">إجراءات</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-white/5">
             {merchants.map((m) => (
-              <tr key={m.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 font-medium text-brand-navy">{m.store_name}</td>
-                <td className="px-4 py-3 text-gray-600">{m.user.name}<div className="text-xs text-gray-400">{m.user.email}</div></td>
-                <td className="px-4 py-3"><span className="inline-flex rounded-full bg-brand-blue/10 text-brand-blue px-2.5 py-0.5 text-xs font-medium">{m.plan}</span></td>
-                <td className="px-4 py-3"><span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${m.is_active ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}>{m.is_active ? "نشط" : "معطل"}</span></td>
+              <tr key={m.id} className="hover:bg-white/5">
+                <td className="px-4 py-3 font-medium text-white">{m.store_name}</td>
+                <td className="px-4 py-3 text-brand-gray">{m.user.name}<div className="text-xs text-brand-gray/60">{m.user.email}</div></td>
+                <td className="px-4 py-3"><span className="inline-flex rounded-full bg-brand-turquoise/10 text-brand-turquoise px-2.5 py-0.5 text-xs font-medium">{m.plan}</span></td>
+                <td className="px-4 py-3"><span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${m.is_active ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}>{m.is_active ? "نشط" : "معطل"}</span></td>
                 <td className="px-4 py-3">
-                  <button onClick={() => toggleStatus(m)} className={`text-xs font-medium ${m.is_active ? "text-red-500 hover:underline" : "text-green-500 hover:underline"}`}>
+                  <button onClick={() => toggleStatus(m)} className={`text-xs font-medium ${m.is_active ? "text-red-400 hover:underline" : "text-green-400 hover:underline"}`}>
                     {m.is_active ? "تعطيل" : "تفعيل"}
                   </button>
                 </td>

@@ -25,10 +25,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       router.push("/login");
       return;
     }
-    if (u.role === "admin") {
-      router.replace("/admin");
-      return;
-    }
     setUserState(u);
   }, [router]);
 

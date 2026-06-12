@@ -13,11 +13,14 @@ export default function AdminDashboard() {
     api.get("/admin/stats", token).then(setStats).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin h-8 w-8 border-4 border-brand-blue border-t-transparent rounded-full" /></div>;
+  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin h-8 w-8 border-4 border-brand-turquoise border-t-transparent rounded-full" /></div>;
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-brand-navy mb-6">لوحة سوبر أدمن</h2>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-white">لوحة التحكم</h2>
+        <p className="text-sm text-brand-gray mt-1">نظرة عامة على المنصة</p>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard title="إجمالي المتاجر" value={stats?.total_merchants ?? 0} />
@@ -27,28 +30,28 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <LinkCard href="/admin/merchants" icon="🏪" title="إدارة المتاجر" desc="عرض وتفعيل وتعطيل المتاجر" />
-        <LinkCard href="/admin/subscriptions" icon="💳" title="طلبات الاشتراك" desc="مراجعة وتفعيل طلبات الترقية" />
-        <LinkCard href="/admin/orders" icon="📋" title="جميع الطلبات" desc="عرض جميع طلبات المنصة" />
+        <LinkCard href="/admin/merchants" icon="🏪" title="إدارة المتاجر" desc="عرض وتفعيل وتعطيل جميع المتاجر" />
+        <LinkCard href="/admin/subscriptions" icon="💳" title="طلبات الاشتراك" desc="مراجعة وتفعيل ورفض طلبات الترقية" />
+        <LinkCard href="/admin/orders" icon="📋" title="جميع الطلبات" desc="مراقبة جميع طلبات المنصة" />
       </div>
     </div>
   );
 }
 
-function StatCard({ title, value }: { title: string; value: number; color?: string }) {
+function StatCard({ title, value }: { title: string; value: number }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5">
+    <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-5 hover:border-brand-turquoise/30 transition">
       <p className="text-sm text-brand-gray">{title}</p>
-      <p className="text-3xl font-bold mt-1 text-brand-navy">{value}</p>
+      <p className="text-3xl font-bold mt-1 text-white">{value}</p>
     </div>
   );
 }
 
 function LinkCard({ href, icon, title, desc }: { href: string; icon: string; title: string; desc: string }) {
   return (
-    <a href={href} className="bg-white rounded-xl border border-gray-200 p-5 hover:border-brand-blue/40 hover:shadow transition block">
+    <a href={href} className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-5 hover:border-brand-turquoise/40 hover:bg-white/10 transition block">
       <div className="text-2xl mb-2">{icon}</div>
-      <h3 className="font-bold text-brand-navy">{title}</h3>
+      <h3 className="font-bold text-white">{title}</h3>
       <p className="text-sm text-brand-gray mt-1">{desc}</p>
     </a>
   );
