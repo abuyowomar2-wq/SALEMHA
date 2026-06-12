@@ -19,8 +19,8 @@ class ImportController extends Controller
         return response()->stream(function () {
             echo "\xEF\xBB\xBF";
             echo "sep=;\n";
-            echo "رقم_الطلب;اسم_العميل;رقم_الجوال;البريد_الإلكتروني;اسم_المنتج;ملاحظات\n";
-            echo "1001;أحمد محمد;0500000000;ahmed@example.com;اسم المنتج هنا;طلب تجريبي\n";
+            echo "الإسم الأول;الإسم الثاني;رقم الهاتف;رقم الطلب;إسم المنتج\n";
+            echo "أحمد;محمد;0500000000;1001;بطاقة ستيم\n";
         }, 200, [
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="orders_template.csv"',
@@ -61,12 +61,13 @@ class ImportController extends Controller
         $products = Product::where('merchant_id', $merchant->id)->pluck('id', 'name');
 
         foreach ($rows as $row) {
-            $orderNumber = trim($row[0] ?? '');
-            $customerName = trim($row[1] ?? '');
+            $firstName = trim($row[0] ?? '');
+            $lastName = trim($row[1] ?? '');
             $customerPhone = trim($row[2] ?? '');
-            $customerEmail = trim($row[3] ?? '') ?: null;
+            $orderNumber = trim($row[3] ?? '');
             $productName = trim($row[4] ?? '');
-            $notes = trim($row[5] ?? '') ?: null;
+
+            $customerName = trim($firstName . ' ' . $lastName);
 
             if (empty($orderNumber) || empty($customerName) || empty($customerPhone)) {
                 $skipped++;
@@ -101,10 +102,8 @@ class ImportController extends Controller
                 'product_id' => $productId,
                 'customer_name' => $customerName,
                 'customer_phone' => $customerPhone,
-                'customer_email' => $customerEmail,
-                'status' => empty($productName) && $productId ? 'pending' : 'pending',
+                'status' => 'pending',
                 'delivery_status' => 'not_sent',
-                'notes' => $notes,
             ]);
 
             $deliveryService->createDeliveryLink($order);
