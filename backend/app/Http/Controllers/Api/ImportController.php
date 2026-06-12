@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\DeliveryService;
 use Illuminate\Http\JsonResponse;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use ZipArchive;
 
 class ImportController extends Controller
 {
@@ -18,8 +18,7 @@ class ImportController extends Controller
         ];
 
         return response()->stream(function () {
-            $bom = "\xEF\xBB\xBF";
-            echo $bom;
+            echo "\xEF\xBB\xBF";
             echo "رقم_الطلب,اسم_العميل,رقم_الجوال,البريد_الإلكتروني,ملاحظات\n";
             echo "1001,أحمد محمد,0500000000,ahmed@example.com,طلب تجريبي\n";
         }, 200, $headers);
@@ -40,30 +39,14 @@ class ImportController extends Controller
             return response()->json(['message' => 'الملف يجب أن يكون بصيغة CSV أو XLSX'], 422);
         }
 
-        $merchant = $request->user()->merchant;
-        $deliveryService = app(DeliveryService::class);
+        $rows = $ext === 'xlsx' ? $this->parseXlsx($file->getRealPath()) : $this->parseCsv($file->getRealPath());
 
-        $rows = [];
-
-        if ($ext === 'xlsx') {
-            $spreadsheet = IOFactory::load($file->getRealPath());
-            $worksheet = $spreadsheet->getActiveSheet();
-            $rows = $worksheet->toArray();
-            array_shift($rows);
-        } else {
-            $handle = fopen($file->getRealPath(), 'r');
-            if ($handle === false) {
-                return response()->json(['message' => 'تعذر قراءة الملف'], 422);
-            }
-            $rowNumber = 0;
-            while (($row = fgetcsv($handle)) !== false) {
-                $rowNumber++;
-                if ($rowNumber === 1) continue;
-                $rows[] = $row;
-            }
-            fclose($handle);
+        if ($rows === null) {
+            return response()->json(['message' => 'تعذر قراءة الملف'], 422);
         }
 
+        $merchant = $request->user()->merchant;
+        $deliveryService = app(DeliveryService::class);
         $imported = 0;
         $skipped = 0;
 
@@ -108,5 +91,100 @@ class ImportController extends Controller
             'imported' => $imported,
             'skipped' => $skipped,
         ]);
+    }
+
+    private function parseXlsx(string $path): ?array
+    {
+        $zip = new ZipArchive;
+        if ($zip->open($path) !== true) {
+            return null;
+        }
+
+        $sharedStrings = [];
+        $stringsXml = $zip->getFromName('xl/sharedStrings.xml');
+        if ($stringsXml) {
+            $xml = simplexml_load_string($stringsXml);
+            if ($xml) {
+                foreach ($xml->si as $si) {
+                    $text = '';
+                    if (isset($si->t)) {
+                        $text = (string) $si->t;
+                    } elseif (isset($si->r)) {
+                        foreach ($si->r as $r) {
+                            $text .= (string) $r->t;
+                        }
+                    }
+                    $sharedStrings[] = $text;
+                }
+            }
+        }
+
+        $sheetXml = $zip->getFromName('xl/worksheets/sheet1.xml');
+        if (! $sheetXml) {
+            $zip->close();
+            return null;
+        }
+
+        $xml = simplexml_load_string($sheetXml);
+        if (! $xml || ! isset($xml->sheetData->row)) {
+            $zip->close();
+            return null;
+        }
+
+        $rows = [];
+        $firstRow = true;
+
+        foreach ($xml->sheetData->row as $row) {
+            if ($firstRow) {
+                $firstRow = false;
+                continue;
+            }
+
+            $rowData = [];
+            foreach ($row->c as $cell) {
+                $value = (string) ($cell->v ?? '');
+
+                if ((string) ($cell['t'] ?? '') === 's' && isset($sharedStrings[(int) $value])) {
+                    $value = $sharedStrings[(int) $value];
+                }
+
+                $rowData[] = $value;
+            }
+
+            if (array_filter($rowData, fn ($v) => $v !== '')) {
+                $rows[] = $rowData;
+            }
+        }
+
+        $zip->close();
+
+        return $rows;
+    }
+
+    private function parseCsv(string $path): ?array
+    {
+        $handle = fopen($path, 'r');
+        if ($handle === false) {
+            return null;
+        }
+
+        $rows = [];
+        $rowNumber = 0;
+
+        while (($row = fgetcsv($handle)) !== false) {
+            $rowNumber++;
+            if ($rowNumber === 1) {
+                continue;
+            }
+
+            $trimmed = array_map('trim', $row);
+            if (array_filter($trimmed, fn ($v) => $v !== '')) {
+                $rows[] = $trimmed;
+            }
+        }
+
+        fclose($handle);
+
+        return $rows;
     }
 }
