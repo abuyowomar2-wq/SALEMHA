@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DeliveryController;
 use App\Http\Controllers\Api\InventoryController;
@@ -71,6 +72,15 @@ Route::prefix('merchant')->middleware(['auth:sanctum', 'merchant'])->group(funct
     // Import
     Route::post('/orders/import', [ImportController::class, 'orders']);
     Route::get('/orders/template', [ImportController::class, 'template']);
+
+    // Customers
+    Route::get('/customers/template', [CustomerController::class, 'template']);
+    Route::post('/customers/import', [CustomerController::class, 'import']);
+    Route::get('/customers', [CustomerController::class, 'index']);
+    Route::post('/customers', [CustomerController::class, 'store']);
+    Route::get('/customers/{customer}', [CustomerController::class, 'show']);
+    Route::put('/customers/{customer}', [CustomerController::class, 'update']);
+    Route::delete('/customers/{customer}', [CustomerController::class, 'destroy']);
 });
 
 /*

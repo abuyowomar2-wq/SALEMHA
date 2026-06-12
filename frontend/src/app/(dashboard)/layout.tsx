@@ -9,6 +9,7 @@ const navItems = [
   { href: "/", label: "الرئيسية", icon: "📊" },
   { href: "/products", label: "المنتجات", icon: "📦" },
   { href: "/orders", label: "الطلبات", icon: "📋" },
+  { href: "/customers", label: "العملاء", icon: "👥" },
   { href: "/settings", label: "الإعدادات", icon: "⚙️" },
 ];
 
