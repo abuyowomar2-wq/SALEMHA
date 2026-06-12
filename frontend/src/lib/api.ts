@@ -42,12 +42,10 @@ export function getToken(): string | null {
 
 export function setToken(token: string) {
   localStorage.setItem("sallemha_token", token);
-  document.cookie = `sallemha_token=${token}; path=/; max-age=2592000; SameSite=Lax`;
 }
 
 export function removeToken() {
   localStorage.removeItem("sallemha_token");
-  document.cookie = "sallemha_token=; path=/; max-age=0";
 }
 
 export function getUser(): any | null {
@@ -58,12 +56,10 @@ export function getUser(): any | null {
 
 export function setUser(user: any) {
   localStorage.setItem("sallemha_user", JSON.stringify(user));
-  document.cookie = `sallemha_user=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=2592000; SameSite=Lax`;
 }
 
 export function removeUser() {
   localStorage.removeItem("sallemha_user");
-  document.cookie = "sallemha_user=; path=/; max-age=0";
 }
 
 export const api = {
