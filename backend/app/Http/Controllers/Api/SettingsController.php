@@ -19,6 +19,10 @@ class SettingsController extends Controller
             'logo_url' => $merchant->logo_url ? asset('storage/' . $merchant->logo_url) : null,
             'primary_color' => $merchant->primary_color,
             'verification_method' => $merchant->verification_method,
+            'affiliate_code' => $merchant->affiliate_code,
+            'affiliate_url' => $merchant->affiliate_code 
+                ? (config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:3000')) . '/register?ref=' . $merchant->affiliate_code) 
+                : null,
             'settings' => $merchant->settings,
         ]);
     }

@@ -29,11 +29,14 @@ class AuthController extends Controller
                 'is_active' => true,
             ]);
 
+            $affiliateCode = 'SAL-' . strtoupper(Str::random(8));
+
             Merchant::create([
                 'user_id' => $user->id,
                 'store_name' => $validated['store_name'],
                 'store_slug' => Str::slug($validated['store_name']) . '-' . Str::random(6),
                 'primary_color' => '#1659D3',
+                'affiliate_code' => $affiliateCode,
                 'referred_by' => $validated['ref'] ?? null,
             ]);
 

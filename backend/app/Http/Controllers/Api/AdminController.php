@@ -53,6 +53,7 @@ class AdminController extends Controller
             'store_slug' => Str::slug($validated['store_name']) . '-' . Str::random(6),
             'primary_color' => '#1659D3',
             'plan' => 'starter',
+            'affiliate_code' => 'SAL-' . strtoupper(Str::random(8)),
         ]);
 
         return response()->json([

@@ -9,6 +9,8 @@ export default function SettingsPage() {
     primary_color: "#1659D3",
     verification_method: "order_number_phone",
     logo_url: null as string | null,
+    affiliate_code: "",
+    affiliate_url: "",
   });
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
@@ -24,6 +26,8 @@ export default function SettingsPage() {
         primary_color: data.primary_color || "#1659D3",
         verification_method: data.verification_method || "order_number_phone",
         logo_url: data.logo_url || null,
+        affiliate_code: data.affiliate_code || "",
+        affiliate_url: data.affiliate_url || "",
       });
       setLoading(false);
     });
@@ -115,6 +119,34 @@ export default function SettingsPage() {
             </select>
           </div>
         </div>
+
+        {/* Affiliate */}
+        {settings.affiliate_code && (
+          <div className="bg-white rounded-xl border border-brand-turquoise/30 p-6 space-y-4">
+            <h3 className="font-semibold text-brand-navy">🤝 نظام الإحالة</h3>
+            <p className="text-xs text-brand-gray">ادعُ تجار جدد واكسب عمولة على اشتراكاتهم</p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">كود الإحالة الخاص بك</label>
+              <div className="flex gap-2">
+                <input value={settings.affiliate_code} readOnly className="flex-1 rounded-lg border bg-gray-50 px-4 py-2 text-sm font-mono font-bold text-brand-navy" dir="ltr" />
+                <button onClick={() => { navigator.clipboard.writeText(settings.affiliate_code); }} className="rounded-lg bg-brand-turquoise px-4 py-2 text-sm font-bold text-white hover:opacity-90">نسخ</button>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">رابط الإحالة</label>
+              <div className="flex gap-2">
+                <input value={settings.affiliate_url} readOnly className="flex-1 rounded-lg border bg-gray-50 px-4 py-2 text-xs text-brand-blue" dir="ltr" />
+                <button onClick={() => { navigator.clipboard.writeText(settings.affiliate_url); }} className="rounded-lg bg-brand-blue px-4 py-2 text-sm font-bold text-white hover:opacity-90">نسخ</button>
+              </div>
+            </div>
+            <div className="bg-brand-turquoise/5 rounded-lg p-3 text-xs text-brand-navy leading-relaxed">
+              <p className="font-bold mb-1">💰 نظام العمولات:</p>
+              <p>• <strong>40%</strong> من الاشتراك الشهري</p>
+              <p>• <strong>20%</strong> من الاشتراك السنوي</p>
+              <p className="mt-2">أي تاجر يسجل عبر رابطك وتفعل باقته المدفوعة، راح تاخذ عمولتك تلقائيًا.</p>
+            </div>
+          </div>
+        )}
 
         <button onClick={handleSave} className="w-full rounded-lg bg-brand-blue py-3 text-sm font-medium text-white hover:opacity-90">
           {saved ? "تم الحفظ ✓" : "حفظ الإعدادات"}
