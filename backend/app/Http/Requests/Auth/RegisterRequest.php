@@ -19,7 +19,7 @@ class RegisterRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'string', 'in:merchant,marketer'],
-            'store_name' => ['required_if:role,merchant', 'string', 'max:255'],
+            'store_name' => ['nullable', 'required_if:role,merchant', 'string', 'max:255'],
             'ref' => ['nullable', 'string', 'max:50'],
         ];
     }
