@@ -34,6 +34,7 @@ class AuthController extends Controller
                 'store_name' => $validated['store_name'],
                 'store_slug' => Str::slug($validated['store_name']) . '-' . Str::random(6),
                 'primary_color' => '#1659D3',
+                'referred_by' => $validated['ref'] ?? null,
             ]);
 
             return $user;

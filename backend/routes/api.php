@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AdminSubscriptionController;
+use App\Http\Controllers\Api\AffiliateController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\DashboardController;
@@ -107,4 +108,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::get('/subscriptions', [AdminSubscriptionController::class, 'index']);
     Route::post('/subscriptions/{subscription}/approve', [AdminSubscriptionController::class, 'approve']);
     Route::post('/subscriptions/{subscription}/reject', [AdminSubscriptionController::class, 'reject']);
+
+    // Affiliates
+    Route::get('/affiliates', [AffiliateController::class, 'stats']);
+    Route::get('/affiliates/{merchant}/referrals', [AffiliateController::class, 'referrals']);
 });

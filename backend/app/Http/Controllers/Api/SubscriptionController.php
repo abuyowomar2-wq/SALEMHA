@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\Commission;
 use App\Enums\Plan;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
@@ -62,6 +63,8 @@ class SubscriptionController extends Controller
         }
 
         $amount = Plan::price($validated['plan'], $validated['billing_cycle']);
+        $commission = Commission::calculate($validated['plan'], $validated['billing_cycle']);
+        $referralCode = $merchant->referred_by;
 
         Subscription::create([
             'merchant_id' => $merchant->id,
@@ -70,6 +73,8 @@ class SubscriptionController extends Controller
             'status' => 'pending',
             'amount' => $amount,
             'bank_reference' => $validated['bank_reference'],
+            'referral_code' => $referralCode,
+            'commission_amount' => $referralCode ? $commission : null,
         ]);
 
         return response()->json([

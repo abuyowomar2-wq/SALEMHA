@@ -19,6 +19,7 @@ class RegisterRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'store_name' => ['required', 'string', 'max:255'],
+            'ref' => ['nullable', 'string', 'max:50'],
         ];
     }
 

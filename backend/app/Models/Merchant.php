@@ -14,6 +14,8 @@ class Merchant extends Model
         'primary_color',
         'verification_method',
         'plan',
+        'affiliate_code',
+        'referred_by',
         'is_active',
         'settings',
     ];
