@@ -21,14 +21,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     const u = getUser();
-    if (!u) {
-      router.push("/login");
-      return;
-    }
-    if (u.role === "admin") {
-      router.replace("/admin");
-      return;
-    }
+    if (!u) { router.push("/login"); return; }
+    if (u.role === "admin") { router.replace("/admin"); return; }
+    if (u.role === "marketer") { router.replace("/marketer"); return; }
     setUserState(u);
   }, [router]);
 

@@ -16,6 +16,7 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'role' => $this->role,
             'is_active' => $this->is_active,
+            'affiliate_code' => $this->affiliate_code,
             'merchant' => $this->whenLoaded('merchant', fn () => [
                 'id' => $this->merchant->id,
                 'store_name' => $this->merchant->store_name,

@@ -14,6 +14,7 @@ export default function RegisterPage() {
     password: "",
     password_confirmation: "",
     store_name: "",
+    role: "merchant",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,7 @@ export default function RegisterPage() {
       const data = await api.post<any>("/auth/register", form);
       setToken(data.token);
       setUser(data.user);
-      router.push("/dashboard");
+      router.push(data.user.role === "marketer" ? "/marketer" : "/dashboard");
     } catch (err: any) {
       setError(err.message || Object.values(err.errors || {}).flat().join(", "));
     } finally {
@@ -44,7 +45,6 @@ export default function RegisterPage() {
     { id: "phone", label: "رقم الجوال (اختياري)", type: "tel", dir: "ltr" },
     { id: "password", label: "كلمة المرور", type: "password", required: true },
     { id: "password_confirmation", label: "تأكيد كلمة المرور", type: "password", required: true },
-    { id: "store_name", label: "اسم المتجر", type: "text", required: true },
   ];
 
   return (
@@ -60,19 +60,25 @@ export default function RegisterPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">نوع الحساب</label>
+            <div className="grid grid-cols-2 gap-2">
+              <button type="button" onClick={() => setForm({ ...form, role: "merchant" })} className={`rounded-lg border-2 px-4 py-2.5 text-sm font-medium transition ${form.role === "merchant" ? "border-brand-blue bg-brand-blue/5 text-brand-blue" : "border-gray-200 text-brand-gray hover:border-gray-300"}`}>🏪 تاجر</button>
+              <button type="button" onClick={() => setForm({ ...form, role: "marketer" })} className={`rounded-lg border-2 px-4 py-2.5 text-sm font-medium transition ${form.role === "marketer" ? "border-brand-turquoise bg-brand-turquoise/5 text-brand-turquoise" : "border-gray-200 text-brand-gray hover:border-gray-300"}`}>🤝 مسوق</button>
+            </div>
+          </div>
           {fields.map((f) => (
             <div key={f.id}>
               <label className="block text-sm font-medium text-gray-700 mb-1">{f.label}</label>
-              <input
-                type={f.type}
-                value={(form as any)[f.id]}
-                onChange={handleChange(f.id)}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                required={f.required}
-                dir={(f as any).dir || "rtl"}
-              />
+              <input type={f.type} value={(form as any)[f.id]} onChange={handleChange(f.id)} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none" required={f.required} dir={(f as any).dir || "rtl"} />
             </div>
           ))}
+          {form.role === "merchant" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">اسم المتجر</label>
+              <input type="text" value={form.store_name} onChange={handleChange("store_name")} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none" required />
+            </div>
+          )}
 
           <button
             type="submit"

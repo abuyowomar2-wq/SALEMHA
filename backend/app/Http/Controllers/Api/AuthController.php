@@ -18,27 +18,32 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         $validated = $request->validated();
+        $isMarketer = ($validated['role'] ?? 'merchant') === 'marketer';
 
-        $user = DB::transaction(function () use ($validated) {
+        $user = DB::transaction(function () use ($validated, $isMarketer) {
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'] ?? null,
                 'password' => $validated['password'],
-                'role' => 'merchant',
+                'role' => $isMarketer ? 'marketer' : 'merchant',
                 'is_active' => true,
             ]);
 
-            $affiliateCode = 'SAL-' . strtoupper(Str::random(8));
+            if ($isMarketer) {
+                $user->update(['affiliate_code' => 'SAL-' . strtoupper(Str::random(8))]);
+            } else {
+                $affiliateCode = 'SAL-' . strtoupper(Str::random(8));
 
-            Merchant::create([
-                'user_id' => $user->id,
-                'store_name' => $validated['store_name'],
-                'store_slug' => Str::slug($validated['store_name']) . '-' . Str::random(6),
-                'primary_color' => '#1659D3',
-                'affiliate_code' => $affiliateCode,
-                'referred_by' => $validated['ref'] ?? null,
-            ]);
+                Merchant::create([
+                    'user_id' => $user->id,
+                    'store_name' => $validated['store_name'],
+                    'store_slug' => Str::slug($validated['store_name']) . '-' . Str::random(6),
+                    'primary_color' => '#1659D3',
+                    'affiliate_code' => $affiliateCode,
+                    'referred_by' => $validated['ref'] ?? null,
+                ]);
+            }
 
             return $user;
         });
@@ -46,7 +51,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
-            'message' => 'تم إنشاء الحساب بنجاح',
+            'message' => $isMarketer ? 'تم إنشاء حساب المسوق بنجاح' : 'تم إنشاء الحساب بنجاح',
             'user' => new UserResource($user->load('merchant')),
             'token' => $token,
         ], 201);

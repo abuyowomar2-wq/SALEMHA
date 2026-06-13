@@ -34,11 +34,9 @@ export default function LandingPage() {
   useEffect(() => {
     if (getToken()) {
       const user = getUser();
-      if (user?.role === "admin") {
-        router.replace("/admin");
-      } else {
-        router.replace("/dashboard");
-      }
+      if (user?.role === "admin") router.replace("/admin");
+      else if (user?.role === "marketer") router.replace("/marketer");
+      else router.replace("/dashboard");
     } else {
       setChecking(false);
     }

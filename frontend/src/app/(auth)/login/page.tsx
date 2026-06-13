@@ -20,7 +20,10 @@ export default function LoginPage() {
       const data = await api.post<any>("/auth/login", { email, password });
       setToken(data.token);
       setUser(data.user);
-      router.push(data.user.role === "admin" ? "/admin" : "/dashboard");
+      const role = data.user.role;
+      if (role === "admin") router.push("/admin");
+      else if (role === "marketer") router.push("/marketer");
+      else router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة");
     } finally {
